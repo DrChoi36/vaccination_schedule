@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소아청소년 예방접종 스케줄 계산기</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .section { margin-bottom: 20px; }
+    label { display: inline-block; width: 120px; }
+    input[type="date"] { width: 150px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #f4f4f4; }
+    .btn { padding: 8px 16px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>지연된 예방접종 스케줄 계산기</h1>
+
+  <div class="section">
+    <h2>1. 생년월일 입력</h2>
+    <label for="dob">출생일:</label>
+    <input type="date" id="dob" />
+    <button class="btn" onclick="calculateAge()">나이 계산</button>
+    <span id="ageDisplay"></span>
+  </div>
+
+  <div class="section">
+    <h2>2. 기존 접종 이력 입력</h2>
+    <form id="historyForm">
+      <!-- BCG -->
+      <div><strong>BCG:</strong> <input type="date" name="BCG1" /></div>
+      <!-- HepB -->
+      <div><strong>HepB:</strong> 1차 <input type="date" name="HepB1" />
+              2차 <input type="date" name="HepB2" />
+              3차 <input type="date" name="HepB3" /></div>
+      <!-- DTaP -->
+      <div><strong>DTaP:</strong> 1차 <input type="date" name="DTaP1" />
+              2차 <input type="date" name="DTaP2" />
+              3차 <input type="date" name="DTaP3" />
+              4차 <input type="date" name="DTaP4" />
+              5차 <input type="date" name="DTaP5" /></div>
+      <!-- Tdap -->
+      <div><strong>Tdap:</strong> 1차 <input type="date" name="Tdap1" />
+              2차 <input type="date" name="Tdap2" /></div>
+      <!-- Td -->
+      <div><strong>Td:</strong> <input type="date" name="Td1" /></div>
+      <!-- IPV -->
+      <div><strong>IPV:</strong> 1차 <input type="date" name="IPV1" />
+              2차 <input type="date" name="IPV2" />
+              3차 <input type="date" name="IPV3" />
+              4차 <input type="date" name="IPV4" /></div>
+      <!-- Hib -->
+      <div><strong>Hib:</strong> 1차 <input type="date" name="Hib1" />
+              2차 <input type="date" name="Hib2" />
+              3차 <input type="date" name="Hib3" />
+              4차 <input type="date" name="Hib4" /></div>
+      <!-- PCV -->
+      <div><strong>PCV:</strong> 1차 <input type="date" name="PCV1" />
+              2차 <input type="date" name="PCV2" />
+              3차 <input type="date" name="PCV3" />
+              4차 <input type="date" name="PCV4" /></div>
+      <!-- PPSV23 -->
+      <div><strong>PPSV23:</strong> 1차 <input type="date" name="PPSV231" />
+              2차 <input type="date" name="PPSV232" /></div>
+      <!-- RV -->
+      <div><strong>RV:</strong> 1차 <input type="date" name="RV1" />
+              2차 <input type="date" name="RV2" />
+              3차 <input type="date" name="RV3" /></div>
+      <!-- MMR -->
+      <div><strong>MMR:</strong> 1차 <input type="date" name="MMR1" />
+              2차 <input type="date" name="MMR2" /></div>
+      <!-- VAR -->
+      <div><strong>VAR:</strong> 1차 <input type="date" name="VAR1" />
+              2차 <input type="date" name="VAR2" /></div>
+      <!-- HepA -->
+      <div><strong>HepA:</strong> 1차 <input type="date" name="HepA1" />
+              2차 <input type="date" name="HepA2" /></div>
+      <!-- IJEV -->
+      <div><strong>IJEV:</strong> 1차 <input type="date" name="IJEV1" />
+              2차 <input type="date" name="IJEV2" />
+              3차 <input type="date" name="IJEV3" />
+              4차 <input type="date" name="IJEV4" />
+              5차 <input type="date" name="IJEV5" /></div>
+      <!-- LIEV -->
+      <div><strong>LIEV:</strong> 1차 <input type="date" name="LIEV1" />
+              2차 <input type="date" name="LIEV2" /></div>
+      <!-- HPV -->
+      <div><strong>HPV:</strong> 1차 <input type="date" name="HPV1" />
+              2차 <input type="date" name="HPV2" />
+              3차 <input type="date" name="HPV3" /></div>
+      <!-- IIV -->
+      <div><strong>IIV:</strong> 1차 <input type="date" name="IIV1" />
+              2차 <input type="date" name="IIV2" />
+              3차 <input type="date" name="IIV3" /></div>
+    </form>
+    <button class="btn" onclick="generateSchedule()">스케줄 생성</button>
+  </div>
+
+  <div class="section">
+    <h2>3. 추천 및 최소 간격 스케줄</h2>
+    <table id="scheduleTable">
+      <thead>
+        <tr>
+          <th>백신명</th>
+          <th>표준 접종시기</th>
+          <th>다음 권장 접종일</th>
+          <th>최소 접종간격</th>
+          <th>최소 기준 다음 접종일</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const scheduleData = {
+      'BCG': { recommended: [0], minGap: [] },
+      'HepB': { recommended: [0, 1, 6], minGap: [[1], [2,16]] },
+      'DTaP': { recommended: [2,4,6,15/30,48/12], minGap: [[1,1,6,6]] },
+      // ... 나머지 백신 데이터 정의 필요
+    };
+
+    function calculateAge() {
+      const dob = document.getElementById('dob').value;
+      if (!dob) return;
+      const birth = new Date(dob);
+      const today = new Date();
+      let years = today.getFullYear() - birth.getFullYear();
+      const m = today.getMonth() - birth.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) years--;
+      document.getElementById('ageDisplay').textContent = `나이: ${years}세 (만 ${years}세)`;
+    }
+
+    function parseDate(inputName) {
+      const val = document.forms['historyForm'][inputName].value;
+      return val ? new Date(val) : null;
+    }
+
+    function addMonths(date, months) {
+      const d = new Date(date);
+      d.setMonth(d.getMonth() + months);
+      return d;
+    }
+
+    function generateSchedule() {
+      const tbody = document.querySelector('#scheduleTable tbody');
+      tbody.innerHTML = '';
+      const dob = new Date(document.getElementById('dob').value);
+      if (!dob) { alert('출생일을 입력하세요'); return; }
+      Object.keys(scheduleData).forEach(name => {
+        const data = scheduleData[name];
+        const history = [];
+        for (let i = 1; i <= (data.recommended.length); i++) {
+          history.push(parseDate(name + i));
+        }
+        const row = document.createElement('tr');
+        // 추천 일정 텍스트
+        const recText = data.recommended.map(m => `${m}개월`).join(', ');
+        // 마지막 접종일 또는 생후 기준
+        const lastDate = history.filter(d=>d).pop() || dob;
+        const nextRec = addMonths(lastDate, data.recommended[history.filter(d=>d).length] || 0).toISOString().slice(0,10);
+        const nextMin = data.minGap[history.filter(d=>d).length] ?
+                        addMonths(lastDate, data.minGap[history.filter(d=>d).length]).toISOString().slice(0,10) : '-';
+        row.innerHTML = `
+          <td>${name}</td>
+          <td>${recText}</td>
+          <td>${nextRec || '-'}</td>
+          <td>${(data.minGap[0]||[]).join('개월 ')}</td>
+          <td>${nextMin}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>

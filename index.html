@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소아청소년 따라잡기 예방접종 스케줄러</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>소아청소년 따라잡기 예방접종 스케줄러</h1>
+        <p class="notice">본 스케줄러는 참고용이며, 실제 접종은 반드시 의사와 상담 후 결정하시기 바랍니다. <br>접종이 1개월 이상 지연된 경우를 기준으로 다음 접종 일정을 계산합니다.</p>
+
+        <div class="input-section">
+            <h2>아이 정보 입력</h2>
+            <div class="form-group">
+                <label for="dob">생년월일:</label>
+                <input type="date" id="dob" name="dob">
+            </div>
+            <button onclick="calculateAndDisplaySchedule()">스케줄 계산하기</button>
+            <div id="age-display" class="age-info"></div>
+        </div>
+
+        <div class="vaccination-history">
+            <h2>과거 접종 기록 입력 (접종한 경우 날짜 입력)</h2>
+            <div id="vaccine-inputs">
+                </div>
+        </div>
+
+        <div class="schedule-output">
+            <h2>다음 권장 접종일 (표준 접종시기 기준)</h2>
+            <table id="standard-schedule-table">
+                <thead>
+                    <tr>
+                        <th>백신명</th>
+                        <th>다음 권장 차수</th>
+                        <th>권장 접종일</th>
+                        <th>비고</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <h2>다음 접종 가능일 (최소 접종간격 기준)</h2>
+            <table id="minimum-schedule-table">
+                <thead>
+                    <tr>
+                        <th>백신명</th>
+                        <th>다음 권장 차수</th>
+                        <th>접종 가능일</th>
+                        <th>비고</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+         <div class="references">
+            <h3>참고 자료</h3>
+            <p>제공해주신 예방접종 스케줄 및 최소 접종 간격, 지연 접종 관련 지침을 기반으로 작성되었습니다.</p>
+        </div>
+    </div>
+
+    <script src="vaccineData.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
